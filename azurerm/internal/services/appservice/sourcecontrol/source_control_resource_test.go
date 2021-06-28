@@ -6,7 +6,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/acceptance"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/acceptance/check"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/clients"
@@ -21,10 +20,10 @@ func TestAccSourceControlResource_windowsExternalGit(t *testing.T) {
 	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
 	r := AppServiceSourceControlResource{}
 
-	data.ResourceTest(t, r, []resource.TestStep{
+	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
 			Config: r.windowsExternalGit(data),
-			Check: resource.ComposeTestCheckFunc(
+			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 				check.That(data.ResourceName).Key("scm_type").HasValue("ExternalGit"),
 			),
@@ -37,10 +36,10 @@ func TestAccSourceControlResource_windowsLocalGit(t *testing.T) {
 	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
 	r := AppServiceSourceControlResource{}
 
-	data.ResourceTest(t, r, []resource.TestStep{
+	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
 			Config: r.windowsLocalGit(data),
-			Check: resource.ComposeTestCheckFunc(
+			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 				check.That(data.ResourceName).Key("scm_type").HasValue("LocalGit"),
 				check.That(data.ResourceName).Key("repo_url").HasValue(fmt.Sprintf("https://acctestwa-%d.scm.azurewebsites.net", data.RandomInteger)),
@@ -58,10 +57,10 @@ func TestAccSourceControlResource_windowsGitHubAction(t *testing.T) {
 	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
 	r := AppServiceSourceControlResource{}
 
-	data.ResourceTest(t, r, []resource.TestStep{
+	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
 			Config: r.windowsGitHubAction(data),
-			Check: resource.ComposeTestCheckFunc(
+			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 				check.That(data.ResourceName).Key("scm_type").HasValue("GitHub"),
 			),
@@ -78,10 +77,10 @@ func TestAccSourceControlResource_windowsGitHub(t *testing.T) {
 	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
 	r := AppServiceSourceControlResource{}
 
-	data.ResourceTest(t, r, []resource.TestStep{
+	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
 			Config: r.windowsGitHub(data),
-			Check: resource.ComposeTestCheckFunc(
+			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 				check.That(data.ResourceName).Key("scm_type").HasValue("GitHub"),
 			),
@@ -94,10 +93,10 @@ func TestAccSourceControlResource_linuxExternalGit(t *testing.T) {
 	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
 	r := AppServiceSourceControlResource{}
 
-	data.ResourceTest(t, r, []resource.TestStep{
+	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
 			Config: r.linuxExternalGit(data),
-			Check: resource.ComposeTestCheckFunc(
+			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 				check.That(data.ResourceName).Key("scm_type").HasValue("ExternalGit"),
 			),
@@ -110,10 +109,10 @@ func TestAccSourceControlResource_linuxLocalGit(t *testing.T) {
 	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
 	r := AppServiceSourceControlResource{}
 
-	data.ResourceTest(t, r, []resource.TestStep{
+	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
 			Config: r.linuxLocalGit(data),
-			Check: resource.ComposeTestCheckFunc(
+			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 				check.That(data.ResourceName).Key("scm_type").HasValue("LocalGit"),
 				check.That(data.ResourceName).Key("repo_url").HasValue(fmt.Sprintf("https://acctestwa-%d.scm.azurewebsites.net", data.RandomInteger)),
@@ -131,10 +130,10 @@ func TestAccSourceControlResource_linuxGitHubAction(t *testing.T) {
 	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
 	r := AppServiceSourceControlResource{}
 
-	data.ResourceTest(t, r, []resource.TestStep{
+	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
 			Config: r.linuxGitHubAction(data),
-			Check: resource.ComposeTestCheckFunc(
+			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 			),
 		},
@@ -150,10 +149,10 @@ func TestAccSourceControlResource_linuxGitHub(t *testing.T) {
 	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
 	r := AppServiceSourceControlResource{}
 
-	data.ResourceTest(t, r, []resource.TestStep{
+	data.ResourceTest(t, r, []acceptance.TestStep{
 		{
 			Config: r.linuxGitHub(data),
-			Check: resource.ComposeTestCheckFunc(
+			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
 				check.That(data.ResourceName).Key("scm_type").HasValue("GitHub"),
 			),
