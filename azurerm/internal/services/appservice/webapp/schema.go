@@ -8,7 +8,6 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/services/web/mgmt/2020-12-01/web"
 	"github.com/Azure/go-autorest/autorest/date"
-	"github.com/terraform-providers/terraform-provider-azuread/azuread/helpers/validate"
 	apimValidate "github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/apimanagement/validate"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/appservice/helpers"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/pluginsdk"
@@ -717,7 +716,7 @@ func linuxApplicationStackSchema() *pluginsdk.Schema {
 				"java_version": {
 					Type:         pluginsdk.TypeString,
 					Optional:     true,
-					ValidateFunc: validate.NoEmptyStrings, // There a significant number of variables here, and the versions are not uniformly formatted.
+					ValidateFunc: validation.StringIsNotEmpty, // There a significant number of variables here, and the versions are not uniformly formatted.
 					// TODO - Needs notes in the docs for this to help users navigate the inconsistencies in the service. e.g. jre8 va java8 etc
 				},
 
@@ -1002,7 +1001,7 @@ func autoHealTriggerSchemaWindows() *pluginsdk.Schema {
 							"path": {
 								Type:         pluginsdk.TypeString,
 								Optional:     true,
-								ValidateFunc: validate.NoEmptyStrings,
+								ValidateFunc: validation.StringIsNotEmpty,
 							},
 						},
 					},
@@ -1111,7 +1110,7 @@ func autoHealTriggerSchemaLinux() *pluginsdk.Schema {
 							"path": {
 								Type:         pluginsdk.TypeString,
 								Optional:     true,
-								ValidateFunc: validate.NoEmptyStrings,
+								ValidateFunc: validation.StringIsNotEmpty,
 							},
 						},
 					},
@@ -1176,14 +1175,14 @@ func virtualApplicationsSchema() *pluginsdk.Schema {
 					Type:         pluginsdk.TypeString,
 					Optional:     true,
 					Computed:     true,
-					ValidateFunc: validate.NoEmptyStrings,
+					ValidateFunc: validation.StringIsNotEmpty,
 				},
 
 				"physical_path": {
 					Type:         pluginsdk.TypeString,
 					Optional:     true,
 					Computed:     true,
-					ValidateFunc: validate.NoEmptyStrings,
+					ValidateFunc: validation.StringIsNotEmpty,
 				},
 
 				"preload": {
@@ -1202,14 +1201,14 @@ func virtualApplicationsSchema() *pluginsdk.Schema {
 								Type:         pluginsdk.TypeString,
 								Optional:     true,
 								Computed:     true,
-								ValidateFunc: validate.NoEmptyStrings,
+								ValidateFunc: validation.StringIsNotEmpty,
 							},
 
 							"physical_path": {
 								Type:         pluginsdk.TypeString,
 								Optional:     true,
 								Computed:     true,
-								ValidateFunc: validate.NoEmptyStrings,
+								ValidateFunc: validation.StringIsNotEmpty,
 							},
 						},
 					},

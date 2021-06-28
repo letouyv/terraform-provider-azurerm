@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/services/web/mgmt/2020-12-01/web"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/helpers/azure"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/location"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/sdk"
@@ -50,7 +49,7 @@ type AppServicePlanModel struct {
 	// KubernetesID string `tfschema:"kubernetes_id"` // AKS Cluster resource ID?
 }
 
-func (r AppServicePlanResource) Arguments() map[string]*schema.Schema {
+func (r AppServicePlanResource) Arguments() map[string]*pluginsdk.Schema {
 	return map[string]*pluginsdk.Schema{
 		"name": {
 			Type:         pluginsdk.TypeString,
@@ -124,7 +123,7 @@ func (r AppServicePlanResource) Arguments() map[string]*schema.Schema {
 	}
 }
 
-func (r AppServicePlanResource) Attributes() map[string]*schema.Schema {
+func (r AppServicePlanResource) Attributes() map[string]*pluginsdk.Schema {
 	return map[string]*pluginsdk.Schema{
 		"kind": {
 			Type:     pluginsdk.TypeString,

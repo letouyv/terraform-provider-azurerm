@@ -2,7 +2,6 @@ package sourcecontrol
 
 import (
 	"github.com/Azure/azure-sdk-for-go/services/web/mgmt/2020-12-01/web"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/pluginsdk"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/utils"
 )
@@ -38,7 +37,7 @@ func githubActionConfigSchema() *pluginsdk.Schema {
 					Optional: true,
 					MaxItems: 1,
 					Elem: &pluginsdk.Resource{
-						Schema: map[string]*schema.Schema{
+						Schema: map[string]*pluginsdk.Schema{
 							"registry_url": {
 								Type:     pluginsdk.TypeString,
 								Required: true,

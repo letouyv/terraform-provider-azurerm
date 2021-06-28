@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/sdk"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/appservice/parse"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/pluginsdk"
@@ -16,11 +15,11 @@ type AppServiceGitHubTokenDataSource struct{}
 
 var _ sdk.DataSource = AppServiceGitHubTokenDataSource{}
 
-func (d AppServiceGitHubTokenDataSource) Arguments() map[string]*schema.Schema {
+func (d AppServiceGitHubTokenDataSource) Arguments() map[string]*pluginsdk.Schema {
 	return nil
 }
 
-func (d AppServiceGitHubTokenDataSource) Attributes() map[string]*schema.Schema {
+func (d AppServiceGitHubTokenDataSource) Attributes() map[string]*pluginsdk.Schema {
 	return map[string]*pluginsdk.Schema{
 		"token": {
 			Type:      pluginsdk.TypeString,

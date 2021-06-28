@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/appservice/validate"
-
 	"github.com/Azure/azure-sdk-for-go/services/web/mgmt/2020-12-01/web"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/sdk"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/appservice/parse"
+	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/appservice/validate"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/pluginsdk"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/validation"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/utils"
@@ -25,7 +23,7 @@ type AppServiceGitHubTokenModel struct {
 var _ sdk.ResourceWithUpdate = AppServiceGitHubTokenResource{}
 var _ sdk.Resource = AppServiceGitHubTokenResource{}
 
-func (r AppServiceGitHubTokenResource) Arguments() map[string]*schema.Schema {
+func (r AppServiceGitHubTokenResource) Arguments() map[string]*pluginsdk.Schema {
 	return map[string]*pluginsdk.Schema{
 		"token": {
 			Type:         pluginsdk.TypeString,
@@ -36,7 +34,7 @@ func (r AppServiceGitHubTokenResource) Arguments() map[string]*schema.Schema {
 	}
 }
 
-func (r AppServiceGitHubTokenResource) Attributes() map[string]*schema.Schema {
+func (r AppServiceGitHubTokenResource) Attributes() map[string]*pluginsdk.Schema {
 	return nil
 }
 
