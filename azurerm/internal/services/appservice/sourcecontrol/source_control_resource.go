@@ -3,6 +3,7 @@ package sourcecontrol
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/services/web/mgmt/2020-12-01/web"
@@ -46,7 +47,7 @@ func (r AppServiceSourceControlResource) Arguments() map[string]*pluginsdk.Schem
 			ValidateFunc: validation.StringIsNotEmpty,
 		},
 
-		"scm_type": {
+		"scm_type": { // Note: this is largely determined by the service based on the provided `repo_url`. It is included here as it is required to set `LocalGit` and possibly for scenarios where the service cannot decode the URL correctly.
 			Type:     pluginsdk.TypeString,
 			Optional: true,
 			Computed: true,
@@ -142,8 +143,22 @@ func (r AppServiceSourceControlResource) Create() sdk.ResourceFunc {
 				return fmt.Errorf("cannot set any additional configuration when `scm_type` is `LocalGit`")
 			}
 
-			if len(appSourceControl.GithubActionConfiguration) != 0 && appSourceControl.SCMType != string(web.ScmTypeGitHub) {
-				return fmt.Errorf("cannot specify GitHub Action configuration unless `scm_type` is set to `GitHub`")
+			if len(appSourceControl.GithubActionConfiguration) != 0 && !appSourceControl.UsesGithubAction {
+				return fmt.Errorf("cannot specify GitHub Action configuration unless `uses_github_action` is set to `true`")
+			}
+
+			if appSourceControl.UsesGithubAction && appSourceControl.ManualIntegration {
+				return fmt.Errorf("source control for %s cannot have both `uses_github_action` and `manual_integration` set to true", id)
+			}
+
+			app, err := client.Get(ctx, id.ResourceGroup, id.SiteName)
+			if err != nil || app.Kind == nil {
+				return fmt.Errorf("reading site to determine O/S type for %s: %+v", id, err)
+			}
+
+			usesLinux := false
+			if strings.Contains(strings.ToLower(*app.Kind), "linux") {
+				usesLinux = true
 			}
 
 			sourceControl := web.SiteSourceControl{
@@ -169,6 +184,8 @@ func (r AppServiceSourceControlResource) Create() sdk.ResourceFunc {
 
 			if appSourceControl.Branch != "" {
 				sourceControl.SiteSourceControlProperties.Branch = utils.String(appSourceControl.Branch)
+			} else if appSourceControl.SCMType != string(web.ScmTypeLocalGit) {
+				return fmt.Errorf("`branch` must be set unless `scm_type` is `LocalGit`")
 			}
 
 			switch appSourceControl.SCMType {
@@ -179,7 +196,7 @@ func (r AppServiceSourceControlResource) Create() sdk.ResourceFunc {
 				}
 			case string(web.ScmTypeGitHub):
 				sitePatch.SiteConfig.ScmType = web.ScmTypeGitHub
-				sourceControl.SiteSourceControlProperties.GitHubActionConfiguration = expandGithubActionConfig(appSourceControl.GithubActionConfiguration)
+				sourceControl.SiteSourceControlProperties.GitHubActionConfiguration = expandGithubActionConfig(appSourceControl.GithubActionConfiguration, usesLinux)
 				_, err = client.UpdateSourceControl(ctx, id.ResourceGroup, id.SiteName, sourceControl)
 				if err != nil {
 					return fmt.Errorf("creating Source Control configuration for %s: %v", id, err)
@@ -188,8 +205,15 @@ func (r AppServiceSourceControlResource) Create() sdk.ResourceFunc {
 					return fmt.Errorf("setting App Source Control Type for %s: %v", id, err)
 				}
 			default:
-				if _, err := client.Update(ctx, id.ResourceGroup, id.SiteName, sitePatch); err != nil {
-					return fmt.Errorf("setting App Source Control Type for %s: %v", id, err)
+				if appSourceControl.SCMType != "" {
+					sitePatch.SiteConfig.ScmType = web.ScmType(appSourceControl.SCMType)
+					if _, err := client.Update(ctx, id.ResourceGroup, id.SiteName, sitePatch); err != nil {
+						return fmt.Errorf("setting App Source Control Type for %s: %v", id, err)
+					}
+				}
+
+				if ghaConfig := expandGithubActionConfig(appSourceControl.GithubActionConfiguration, usesLinux); ghaConfig != nil {
+					sourceControl.SiteSourceControlProperties.GitHubActionConfiguration = ghaConfig
 				}
 
 				_, err = client.UpdateSourceControl(ctx, id.ResourceGroup, id.SiteName, sourceControl)

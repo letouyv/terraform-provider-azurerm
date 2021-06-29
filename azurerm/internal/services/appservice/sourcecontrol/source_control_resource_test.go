@@ -190,9 +190,10 @@ provider "azurerm" {
 %s
 
 resource "azurerm_app_service_source_control" "test" {
-  app_id   = azurerm_windows_web_app.test.id
-  repo_url = "https://github.com/Azure-Samples/app-service-web-dotnet-get-started"
-  branch   = "master"
+  app_id             = azurerm_windows_web_app.test.id
+  repo_url           = "https://github.com/Azure-Samples/app-service-web-dotnet-get-started.git"
+  branch             = "master"
+  manual_integration = true
 }
 
 `, baseWindowsAppTemplate(data))
@@ -207,9 +208,10 @@ provider "azurerm" {
 %s
 
 resource "azurerm_app_service_source_control" "test" {
-  app_id   = azurerm_linux_web_app.test.id
-  repo_url = "https://github.com/Azure-Samples/python-docs-hello-world"
-  branch   = "master"
+  app_id             = azurerm_linux_web_app.test.id
+  repo_url           = "https://github.com/Azure-Samples/python-docs-hello-world.git"
+  branch             = "master"
+  manual_integration = true
 }
 
 `, baseLinuxAppTemplate(data))
@@ -225,7 +227,7 @@ provider "azurerm" {
 
 resource "azurerm_app_service_source_control" "test" {
   app_id   = azurerm_windows_web_app.test.id
-  acm_type = "LocalGit"
+  scm_type = "LocalGit"
 }
 
 `, baseWindowsAppTemplate(data))
@@ -267,17 +269,11 @@ resource "azurerm_app_service_source_control" "test" {
   scm_type = "GitHub"
 
   github_action_configuration {
-    linux_action           = true
     generate_workflow_file = true
 
-    container_configuration {
-      registry_url = ""
-      image_name   = ""
-    }
-
     code_configuration {
-      runtime_stack   = ""
-      runtime_version = ""
+      runtime_stack   = "dotnetcore"
+      runtime_version = "5.0.x"
     }
   }
 
@@ -362,6 +358,7 @@ resource azurerm_app_service_github_token test {
 resource "azurerm_app_service_source_control" "test" {
   app_id   = azurerm_linux_web_app.test.id
   repo_url = "https://github.com/jackofallops/azure-app-service-static-site-tests"
+  branch   = "development"
   scm_type = "GitHub"
 }
 

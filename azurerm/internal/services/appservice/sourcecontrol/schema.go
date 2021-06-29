@@ -3,6 +3,7 @@ package sourcecontrol
 import (
 	"github.com/Azure/azure-sdk-for-go/services/web/mgmt/2020-12-01/web"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/pluginsdk"
+	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/validation"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/utils"
 )
 
@@ -18,7 +19,7 @@ type GitHubActionCodeConfig struct {
 	RuntimeVersion string `tfschema:"runtime_version"`
 }
 
-type GitHubActionContainerConfig struct {
+type GitHubActionContainerConfig struct { // TODO - May need to remove this, cannot find a valid way to use it?
 	RegistryURL      string `tfschema:"registry_url"`
 	ImageName        string `tfschema:"image_name"`
 	RegistryUsername string `tfschema:"registry_username"`
@@ -73,13 +74,19 @@ func githubActionConfigSchema() *pluginsdk.Schema {
 							"runtime_stack": {
 								Type:     pluginsdk.TypeString,
 								Required: true,
-								//ValidateFunc: validate.NoEmptyStrings,
+								ValidateFunc: validation.StringInSlice([]string{
+									"dotnetcore", // For all .Net builds on all O/S
+									"spring",     // Java on Java, JBOSSEAP
+									"tomcat",     // Java on Tomcat
+									"node",       // Node, all versions
+									"python",     // Python, all versions
+								}, false),
 							},
 
 							"runtime_version": {
-								Type:     pluginsdk.TypeString,
-								Optional: true, // Should this be required?
-								//ValidateFunc: validate.NoEmptyStrings, // Can this be empty?
+								Type:         pluginsdk.TypeString,
+								Required:     true, // Should this be required?
+								ValidateFunc: validation.StringIsNotEmpty,
 							},
 						},
 					},
@@ -87,21 +94,20 @@ func githubActionConfigSchema() *pluginsdk.Schema {
 
 				"linux_action": {
 					Type:     pluginsdk.TypeBool,
-					Optional: true,
 					Computed: true,
 				},
 
 				"generate_workflow_file": {
 					Type:     pluginsdk.TypeBool,
 					Optional: true,
-					Computed: true,
+					Default:  true,
 				},
 			},
 		},
 	}
 }
 
-func expandGithubActionConfig(input []GithubActionConfiguration) *web.GitHubActionConfiguration {
+func expandGithubActionConfig(input []GithubActionConfiguration, usesLinux bool) *web.GitHubActionConfiguration {
 	if input == nil {
 		return nil
 	}
@@ -110,7 +116,7 @@ func expandGithubActionConfig(input []GithubActionConfiguration) *web.GitHubActi
 	output := &web.GitHubActionConfiguration{
 		CodeConfiguration:      nil,
 		ContainerConfiguration: nil,
-		IsLinux:                utils.Bool(ghActionConfig.UsesLinux),
+		IsLinux:                utils.Bool(usesLinux),
 		GenerateWorkflowFile:   utils.Bool(ghActionConfig.GenerateWorkflowFile),
 	}
 
