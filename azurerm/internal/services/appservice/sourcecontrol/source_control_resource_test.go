@@ -14,6 +14,8 @@ import (
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/utils"
 )
 
+// (@jackofallops) Note: Some tests require a valid GitHub token for ARM_GITHUB_ACCESS_TOKEN. This token needs the `repo` and `workflow` permissions to be applicable on the referenced repositories.
+
 type AppServiceSourceControlResource struct{}
 
 func TestAccSourceControlResource_windowsExternalGit(t *testing.T) {
@@ -29,6 +31,22 @@ func TestAccSourceControlResource_windowsExternalGit(t *testing.T) {
 			),
 		},
 		data.ImportStep(),
+	})
+}
+
+func TestAccSourceControlResource_requiresImport(t *testing.T) {
+	data := acceptance.BuildTestData(t, "azurerm_app_service_source_control", "test")
+	r := AppServiceSourceControlResource{}
+
+	data.ResourceTest(t, r, []acceptance.TestStep{
+		{
+			Config: r.windowsExternalGit(data),
+			Check: acceptance.ComposeTestCheckFunc(
+				check.That(data.ResourceName).ExistsInAzure(r),
+				check.That(data.ResourceName).Key("scm_type").HasValue("ExternalGit"),
+			),
+		},
+		data.RequiresImportErrorStep(r.requiresImport),
 	})
 }
 
@@ -135,6 +153,8 @@ func TestAccSourceControlResource_linuxGitHubAction(t *testing.T) {
 			Config: r.linuxGitHubAction(data),
 			Check: acceptance.ComposeTestCheckFunc(
 				check.That(data.ResourceName).ExistsInAzure(r),
+				check.That(data.ResourceName).Key("scm_type").HasValue("GitHubAction"),
+				check.That(data.ResourceName).Key("uses_github_action").HasValue("true"),
 			),
 		},
 		data.ImportStep(),
@@ -198,6 +218,19 @@ resource "azurerm_app_service_source_control" "test" {
 
 `, baseWindowsAppTemplate(data))
 }
+func (r AppServiceSourceControlResource) requiresImport(data acceptance.TestData) string {
+	return fmt.Sprintf(`
+%s
+
+resource "azurerm_app_service_source_control" "import" {
+  app_id             = azurerm_app_service_source_control.test.app_id
+  repo_url           = azurerm_app_service_source_control.test.repo_url
+  branch             = azurerm_app_service_source_control.test.branch
+  manual_integration = azurerm_app_service_source_control.test.manual_integration
+}
+
+`, r.windowsExternalGit(data))
+}
 
 func (r AppServiceSourceControlResource) linuxExternalGit(data acceptance.TestData) string {
 	return fmt.Sprintf(`
@@ -249,7 +282,6 @@ resource "azurerm_app_service_source_control" "test" {
 `, baseLinuxAppTemplate(data))
 }
 
-// TODO - Figure this out, GHA items here are not well documented
 func (r AppServiceSourceControlResource) windowsGitHubAction(data acceptance.TestData) string {
 	token := os.Getenv("ARM_GITHUB_ACCESS_TOKEN")
 	return fmt.Sprintf(`
@@ -304,7 +336,6 @@ resource "azurerm_app_service_source_control" "test" {
 `, baseWindowsAppTemplate(data), token)
 }
 
-// TODO - Figure this out, GHA items here are not well documented
 func (r AppServiceSourceControlResource) linuxGitHubAction(data acceptance.TestData) string {
 	token := os.Getenv("ARM_GITHUB_ACCESS_TOKEN")
 	return fmt.Sprintf(`
@@ -321,20 +352,14 @@ resource azurerm_app_service_github_token test {
 resource "azurerm_app_service_source_control" "test" {
   app_id   = azurerm_linux_web_app.test.id
   repo_url = "https://github.com/jackofallops/azure-app-service-static-site-tests.git"
-  scm_type = "GitHub"
+  branch   = "angularjs"
 
   github_action_configuration {
-    linux_action           = true
     generate_workflow_file = true
 
-    container_configuration {
-      registry_url = ""
-      image_name   = ""
-    }
-
     code_configuration {
-      runtime_stack   = ""
-      runtime_version = ""
+      runtime_stack   = "node"
+      runtime_version = "14.x"
     }
   }
 }

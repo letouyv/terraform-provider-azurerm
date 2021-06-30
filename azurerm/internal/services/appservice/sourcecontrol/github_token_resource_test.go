@@ -13,6 +13,8 @@ import (
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/utils"
 )
 
+// (@jackofallops) Note: These tests require a valid GitHub token for ARM_GITHUB_ACCESS_TOKEN. This token needs the `repo` and `workflow` permissions on the referenced repositories.
+
 type AppServiceGitHubTokenResource struct{}
 
 func TestAccSourceControlGitHubToken_basic(t *testing.T) {
