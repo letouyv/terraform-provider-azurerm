@@ -124,7 +124,7 @@ ENHANCEMENTS:
 * dependencies: updating `synapse` to use API Version `2021-03-01` ([#12183](https://github.com/terraform-providers/terraform-provider-azurerm/issues/12183))
 * `azurerm_api_management` - support for the `client_certificate_enabled`, `gateway_disabled`, `min_api_version`, and `zones` propeties ([#12125](https://github.com/terraform-providers/terraform-provider-azurerm/issues/12125))
 * `azurerm_api_management_api_schema` - prevent plan not empty after apply for json definitions  ([#12039](https://github.com/terraform-providers/terraform-provider-azurerm/issues/12039))
-* `azurerm_application_gateway` - correctly poopulat the `identity` block ([#12226](https://github.com/terraform-providers/terraform-provider-azurerm/issues/12226))
+* `azurerm_application_gateway` - correctly populate the `identity` block ([#12226](https://github.com/terraform-providers/terraform-provider-azurerm/issues/12226))
 * `azurerm_container_registry` - support for the `zone_redundancy_enabled` field ([#11706](https://github.com/terraform-providers/terraform-provider-azurerm/issues/11706))
 * `azurerm_cosmosdb_sql_container` - support for the `spatial_index` block ([#11625](https://github.com/terraform-providers/terraform-provider-azurerm/issues/11625))
 * `azurerm_cosmos_gremlin_graph` - support for the `spatial_index` property ([#12176](https://github.com/terraform-providers/terraform-provider-azurerm/issues/12176))
